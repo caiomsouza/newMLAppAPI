@@ -36,6 +36,14 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.6.0, )"
+            },
+            "Azure.Storage.Files.DataLake": {
+              "target": "Package",
+              "version": "[12.4.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.AzureADB2C.UI": {
               "target": "Package",
               "version": "[3.1.8, )"

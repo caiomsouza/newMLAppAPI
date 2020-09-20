@@ -5,17 +5,30 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using webapi.Models;
-
+using System.Configuration;
+using Azure.Storage.Blobs;
+using Azure.Storage.Files.DataLake;
+using Azure.Storage.Files.DataLake.Models;
+using Azure.Storage;
+using System.Text;
+using System.Net.Http;
+using System.IO;
 
 namespace webapi.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     
     public class newMLAppController : ControllerBase
     {
+        private IConfiguration configuration;
+        public newMLAppController(IConfiguration iConfig)
+        {
+            configuration = iConfig;
+        }
         [HttpGet]
         [Route("api/getClaims")]
         public  List<SecurityClaims> getClaims()
@@ -49,5 +62,40 @@ namespace webapi.Controllers
 
         }
 
+        [HttpPost]
+        [Route("api/saveAndAnalyzeMedia")]
+        public async Task<string> SaveAndAnalyze([FromBody] MediaData MD){
+            
+            var claims = getClaims();
+            var objectid = claims.Where( x => x.Type.ToLower() == "http://schemas.microsoft.com/identity/claims/objectidentifier").Single().ClaimValue;
+            //var objectid = "test";
+            var accountName = configuration.GetSection("adlsgen2").GetSection("accountName").Value;
+            var accountKey = configuration.GetSection("adlsgen2").GetSection("accountKey").Value;
+            
+            StorageSharedKeyCredential sharedKeyCredential =new StorageSharedKeyCredential(accountName, accountKey);
+
+
+            string dfsUri = "https://" + accountName + ".dfs.core.windows.net";
+
+            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(dfsUri), sharedKeyCredential);
+            var mediaFileSystem  = dataLakeServiceClient.GetFileSystemClient("mediafiles");
+            
+            DataLakeDirectoryClient directoryClient = mediaFileSystem.GetDirectoryClient(objectid);
+            await directoryClient.CreateIfNotExistsAsync();
+
+
+            var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + ".jpg");
+            // convert string to stream
+            byte[] byteArray =  Convert.FromBase64String(MD.Mediabase64);
+            //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
+            MemoryStream stream = new MemoryStream(byteArray);
+
+        
+
+
+            var upload1 = await fileClient.UploadAsync(stream, overwrite:true);
+            return (fileClient.Uri.ToString());
+            
+        }
     }
 }

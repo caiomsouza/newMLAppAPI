@@ -30,3 +30,8 @@
 /Users/manishshukla/Documents/technical/webapi/obj/Debug/netcoreapp3.1/webapi.dll
 /Users/manishshukla/Documents/technical/webapi/obj/Debug/netcoreapp3.1/webapi.pdb
 /Users/manishshukla/Documents/technical/webapi/obj/Debug/netcoreapp3.1/webapi.genruntimeconfig.cache
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Azure.Core.dll
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Azure.Storage.Blobs.dll
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Azure.Storage.Common.dll
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Azure.Storage.Files.DataLake.dll
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Microsoft.Bcl.AsyncInterfaces.dll
