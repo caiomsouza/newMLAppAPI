@@ -19,7 +19,7 @@ using System.IO;
 
 namespace webapi.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     
     public class newMLAppController : ControllerBase
