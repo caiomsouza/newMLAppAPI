@@ -70,55 +70,65 @@ namespace webapi.Controllers
         [Route("api/saveAndAnalyzeMedia")]
         public async Task<string> SaveAndAnalyze([FromBody] MediaData MD){
             
-            var claims = getClaims();
-            var objectid = claims.Where( x => x.Type.ToLower() == "http://schemas.microsoft.com/identity/claims/objectidentifier").Single().ClaimValue;
-            //var objectid = "test";
-            var accountName = configuration.GetSection("adlsgen2").GetSection("accountName").Value;
-            var accountKey = getAccountKey();
-
-            
-            
-            StorageSharedKeyCredential sharedKeyCredential =new StorageSharedKeyCredential(accountName, accountKey);
-
-
-            string dfsUri = "https://" + accountName + ".dfs.core.windows.net";
-
-            var dataLakeServiceClient = new DataLakeServiceClient(new Uri(dfsUri), sharedKeyCredential);
-            var mediaFileSystem  = dataLakeServiceClient.GetFileSystemClient("mediafiles");
-            
-            DataLakeDirectoryClient directoryClient = mediaFileSystem.GetDirectoryClient(objectid);
-            await directoryClient.CreateIfNotExistsAsync();
-
-
-            var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + "." + MD.fileExtension);
-            // convert string to stream
-            byte[] byteArray =  Convert.FromBase64String(MD.Mediabase64);
-           
-            MemoryStream stream = new MemoryStream(byteArray);
-
-        
-
-
-            var upload1 = await fileClient.UploadAsync(stream, overwrite:true);
-            
-
-            AccountSasBuilder sas = new AccountSasBuilder
+            try
             {
-                Protocol = SasProtocol.None,
-                Services = AccountSasServices.Blobs,
-                ResourceTypes = AccountSasResourceTypes.All,
-                StartsOn = DateTimeOffset.UtcNow.AddHours(-1),
-                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+                var claims = getClaims();
+                var objectid = claims.Where( x => x.Type.ToLower() == "http://schemas.microsoft.com/identity/claims/objectidentifier").Single().ClaimValue;
+                //var objectid = "test";
+                var accountName = configuration.GetSection("adlsgen2").GetSection("accountName").Value;
 
-            };
-            sas.SetPermissions(AccountSasPermissions.Read);
-            UriBuilder sasUri = new UriBuilder(fileClient.Uri);
-            sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
+                var accountKey = getAccountKey();
+
+                
+                
+                StorageSharedKeyCredential sharedKeyCredential =new StorageSharedKeyCredential(accountName, accountKey);
 
 
-            return (sasUri.ToString());
+                string dfsUri = "https://" + accountName + ".dfs.core.windows.net";
+
+                var dataLakeServiceClient = new DataLakeServiceClient(new Uri(dfsUri), sharedKeyCredential);
+                var mediaFileSystem  = dataLakeServiceClient.GetFileSystemClient("mediafiles");
+                
+                DataLakeDirectoryClient directoryClient = mediaFileSystem.GetDirectoryClient(objectid);
+                await directoryClient.CreateIfNotExistsAsync();
+
+
+                var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + "." + MD.fileExtension);
+                // convert string to stream
+                byte[] byteArray =  Convert.FromBase64String(MD.Mediabase64);
             
+                MemoryStream stream = new MemoryStream(byteArray);
+
+            
+
+
+                var upload1 = await fileClient.UploadAsync(stream, overwrite:true);
+                
+
+                AccountSasBuilder sas = new AccountSasBuilder
+                {
+                    Protocol = SasProtocol.None,
+                    Services = AccountSasServices.Blobs,
+                    ResourceTypes = AccountSasResourceTypes.All,
+                    StartsOn = DateTimeOffset.UtcNow.AddHours(-1),
+                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+
+                };
+                sas.SetPermissions(AccountSasPermissions.Read);
+                UriBuilder sasUri = new UriBuilder(fileClient.Uri);
+                sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
+
+
+                return (sasUri.ToString());
+            }
+            catch(Exception ex)
+            {
+                return ex.Message;
+            }
         }
+
+            
+        
 
         private string getAccountKey(){
             SecretClientOptions options = new SecretClientOptions()
