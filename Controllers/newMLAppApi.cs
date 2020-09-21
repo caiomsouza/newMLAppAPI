@@ -17,6 +17,9 @@ using System.Text;
 using System.Net.Http;
 using System.IO;
 using Azure.Storage.Sas;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using Azure.Core;
 
 namespace webapi.Controllers
 {
@@ -71,7 +74,9 @@ namespace webapi.Controllers
             var objectid = claims.Where( x => x.Type.ToLower() == "http://schemas.microsoft.com/identity/claims/objectidentifier").Single().ClaimValue;
             //var objectid = "test";
             var accountName = configuration.GetSection("adlsgen2").GetSection("accountName").Value;
-            var accountKey = configuration.GetSection("adlsgen2").GetSection("accountKey").Value;
+            var accountKey = getAccountKey();
+
+            
             
             StorageSharedKeyCredential sharedKeyCredential =new StorageSharedKeyCredential(accountName, accountKey);
 
@@ -85,16 +90,17 @@ namespace webapi.Controllers
             await directoryClient.CreateIfNotExistsAsync();
 
 
-            var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + ".jpg");
+            var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + "." + MD.fileExtension);
             // convert string to stream
             byte[] byteArray =  Convert.FromBase64String(MD.Mediabase64);
-            //byte[] byteArray = Encoding.ASCII.GetBytes(contents);
+           
             MemoryStream stream = new MemoryStream(byteArray);
 
         
 
 
             var upload1 = await fileClient.UploadAsync(stream, overwrite:true);
+            
 
             AccountSasBuilder sas = new AccountSasBuilder
             {
@@ -112,6 +118,30 @@ namespace webapi.Controllers
 
             return (sasUri.ToString());
             
+        }
+
+        private string getAccountKey(){
+            SecretClientOptions options = new SecretClientOptions()
+                            {
+                                Retry =
+                                {
+                                    Delay= TimeSpan.FromSeconds(2),
+                                    MaxDelay = TimeSpan.FromSeconds(16),
+                                    MaxRetries = 5,
+                                    Mode = RetryMode.Exponential
+                                }
+                            };
+        var client = new SecretClient(new Uri("https://newmlappkeyvault.vault.azure.net/"), new DefaultAzureCredential(
+                    new DefaultAzureCredentialOptions
+                    {
+                        ExcludeVisualStudioCredential = true,
+                        ExcludeVisualStudioCodeCredential = true
+                    }),options);
+
+        KeyVaultSecret secret = client.GetSecret("mediaforanalysisacckey");
+
+        string secretValue = secret.Value;
+        return secretValue;
         }
     }
 }

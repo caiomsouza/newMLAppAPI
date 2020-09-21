@@ -36,6 +36,14 @@
       "frameworks": {
         "netcoreapp3.1": {
           "dependencies": {
+            "Azure.Identity": {
+              "target": "Package",
+              "version": "[1.2.3, )"
+            },
+            "Azure.Security.KeyVault.Secrets": {
+              "target": "Package",
+              "version": "[4.1.0, )"
+            },
             "Azure.Storage.Blobs": {
               "target": "Package",
               "version": "[12.6.0, )"
