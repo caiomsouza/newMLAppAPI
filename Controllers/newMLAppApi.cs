@@ -16,6 +16,7 @@ using Azure.Storage;
 using System.Text;
 using System.Net.Http;
 using System.IO;
+using Azure.Storage.Sas;
 
 namespace webapi.Controllers
 {
@@ -94,7 +95,22 @@ namespace webapi.Controllers
 
 
             var upload1 = await fileClient.UploadAsync(stream, overwrite:true);
-            return (fileClient.Uri.ToString());
+
+            AccountSasBuilder sas = new AccountSasBuilder
+            {
+                Protocol = SasProtocol.None,
+                Services = AccountSasServices.Blobs,
+                ResourceTypes = AccountSasResourceTypes.All,
+                StartsOn = DateTimeOffset.UtcNow.AddHours(-1),
+                ExpiresOn = DateTimeOffset.UtcNow.AddHours(1),
+
+            };
+            sas.SetPermissions(AccountSasPermissions.Read);
+            UriBuilder sasUri = new UriBuilder(fileClient.Uri);
+            sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
+
+
+            return (sasUri.ToString());
             
         }
     }
