@@ -93,7 +93,7 @@ namespace webapi.Controllers
                 await directoryClient.CreateIfNotExistsAsync();
 
 
-                var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + "." + MD.fileExtension);
+                var fileClient = directoryClient.GetFileClient( Guid.NewGuid().ToString() + MD.fileExtension);
                 // convert string to stream
                 byte[] byteArray =  Convert.FromBase64String(MD.Mediabase64);
             
