@@ -118,22 +118,11 @@ namespace webapi.Controllers
                 sas.SetPermissions(AccountSasPermissions.Read);
                 UriBuilder sasUri = new UriBuilder(fileClient.Uri);
                 sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
-                var dogbreedapikey = getAccountKey("dogbreedkey");
-                
-                HttpClient hc = new  HttpClient();
-                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",dogbreedapikey));
                 DogBreedDetectRequest dreq = new  DogBreedDetectRequest();
                 dreq.filelocations = new List<string>();
                 dreq.filelocations.Add(sasUri.ToString());
-                
-                var response = await hc.PostAsJsonAsync<DogBreedDetectRequest>("http://8f0bc1cb-2b66-4d46-81a8-a7c8e93ba646.uksouth.azurecontainer.io/score",dreq);
-               
-                var breedData = JsonSerializer.Deserialize<DogBreedDetectResponse>(await response.Content.ReadAsStringAsync());
-                var breedLabel = breedData.Breed.Single().Value.Single().Value;
                 AnalysisResponse AR = new  AnalysisResponse();
-                AR.fileUri = sasUri.ToString();
-                AR.StuffToShow = new   Dictionary<string, string>();
-                AR.StuffToShow.Add("Breed",breedLabel);
+                AR = await  Analyze(dreq);
                 return (AR);
             }
             catch(Exception ex)
@@ -144,7 +133,28 @@ namespace webapi.Controllers
             }
         }
 
-            
+        [HttpPost]
+        [Route("api/AnalyzeMedia")]
+        [AllowAnonymous]
+        public async Task<AnalysisResponse> Analyze([FromBody] DogBreedDetectRequest dreq){
+
+                var dogbreedapikey = getAccountKey("dogbreedkey");
+                
+                HttpClient hc = new  HttpClient();
+                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",dogbreedapikey));
+
+                
+                var response = await hc.PostAsJsonAsync<DogBreedDetectRequest>("http://8f0bc1cb-2b66-4d46-81a8-a7c8e93ba646.uksouth.azurecontainer.io/score",dreq);
+               
+                var breedData = JsonSerializer.Deserialize<List<string>>(await response.Content.ReadAsStringAsync());
+                var breedLabel = breedData.First();
+                AnalysisResponse AR = new  AnalysisResponse();
+                AR.fileUri = dreq.filelocations[0];
+                AR.StuffToShow = new   Dictionary<string, string>();
+                AR.StuffToShow.Add("Breed",breedLabel);
+                return AR;
+
+        }
         
 
         private string getAccountKey(string secretName){
