@@ -5,6 +5,6 @@ public class DogBreedDetectRequest{
 }
 
 public class DogBreedDetectResponse{
-    public Dictionary<string,string> Breed{get;set;}
+    public Dictionary<string,Dictionary<string,string>> Breed{get;set;}
 
 }
