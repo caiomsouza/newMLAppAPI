@@ -128,12 +128,12 @@ namespace webapi.Controllers
                 
                 var response = await hc.PostAsJsonAsync<DogBreedDetectRequest>("http://8f0bc1cb-2b66-4d46-81a8-a7c8e93ba646.uksouth.azurecontainer.io/score",dreq);
                
-                var breedData = JsonSerializer.Deserialize<DogBreedDetectResponse>(await response.Content.ReadAsStringAsync());
-                var breedLabel = breedData.Breed.Single().Value;
+                //var breedData = JsonSerializer.Deserialize<DogBreedDetectResponse>(await response.Content.ReadAsStringAsync());
+                //var breedLabel = breedData.Breed.Single().Value;
                 AnalysisResponse AR = new  AnalysisResponse();
-                AR.fileUri = sasUri.ToString();
+                AR.fileUri = await response.Content.ReadAsStringAsync();//sasUri.ToString();
                 AR.StuffToShow = new   Dictionary<string, string>();
-                AR.StuffToShow.Add("Breed",breedLabel);
+                //AR.StuffToShow.Add("Breed",breedLabel);
                 return (AR);
             }
             catch(Exception ex)
