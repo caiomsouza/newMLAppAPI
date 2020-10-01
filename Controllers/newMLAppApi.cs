@@ -21,6 +21,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Core;
 
+using System.Text.Json.Serialization;
 namespace webapi.Controllers
 {
     [Authorize]
@@ -68,7 +69,7 @@ namespace webapi.Controllers
 
         [HttpPost]
         [Route("api/saveAndAnalyzeMedia")]
-        public async Task<string> SaveAndAnalyze([FromBody] MediaData MD){
+        public async Task<AnalysisResponse> SaveAndAnalyze([FromBody] MediaData MD){
             
             try
             {
@@ -77,7 +78,7 @@ namespace webapi.Controllers
                 //var objectid = "test";
                 var accountName = configuration.GetSection("adlsgen2").GetSection("accountName").Value;
 
-                var accountKey = getAccountKey();
+                var accountKey = getAccountKey("mediaforanalysisacckey");
 
                 
                 
@@ -117,26 +118,43 @@ namespace webapi.Controllers
                 sas.SetPermissions(AccountSasPermissions.Read);
                 UriBuilder sasUri = new UriBuilder(fileClient.Uri);
                 sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
-
-
-                return (sasUri.ToString());
+                var dogbreedapikey = getAccountKey("dogbreedkey");
+                
+                HttpClient hc = new  HttpClient();
+                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",dogbreedapikey));
+                DogBreedDetectRequest dreq = new  DogBreedDetectRequest();
+                dreq.filelocations = new List<string>();
+                dreq.filelocations.Add(sasUri.ToString());
+                
+                var response = await hc.PostAsJsonAsync<DogBreedDetectRequest>("http://8f0bc1cb-2b66-4d46-81a8-a7c8e93ba646.uksouth.azurecontainer.io/score",dreq);
+               
+                var breedData = JsonSerializer.Deserialize<DogBreedDetectResponse>(await response.Content.ReadAsStringAsync());
+                var breedLabel = breedData.Breed.Single().Value;
+                AnalysisResponse AR = new  AnalysisResponse();
+                AR.fileUri = sasUri.ToString();
+                AR.StuffToShow = new   Dictionary<string, string>();
+                AR.StuffToShow.Add("Breed",breedLabel);
+                return (AR);
             }
             catch(Exception ex)
             {
-                return ex.Message;
+                AnalysisResponse AR = new  AnalysisResponse();
+                AR.fileUri = ex.Message;
+                return AR;
             }
         }
 
             
         
 
-        private string getAccountKey(){
+        private string getAccountKey(string secretName){
             SecretClientOptions options = new SecretClientOptions()
                             {
                                 Retry =
                                 {
                                     Delay= TimeSpan.FromSeconds(2),
                                     MaxDelay = TimeSpan.FromSeconds(16),
+                                    
                                     MaxRetries = 5,
                                     Mode = RetryMode.Exponential
                                 }
@@ -148,9 +166,11 @@ namespace webapi.Controllers
                         ExcludeVisualStudioCodeCredential = true
                     }),options);
 
-        KeyVaultSecret secret = client.GetSecret("mediaforanalysisacckey");
+        KeyVaultSecret secret = client.GetSecret(secretName);
 
         string secretValue = secret.Value;
+        
+
         return secretValue;
         }
     }

@@ -30,6 +30,7 @@
           "Azure.Storage.Files.DataLake": "12.4.0",
           "Microsoft.AspNetCore.Authentication.AzureADB2C.UI": "3.1.8",
           "Microsoft.Extensions.Configuration.AzureKeyVault": "3.1.8",
+          "Microsoft.Identity.Client": "4.18.0",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "3.1.0.0",
@@ -336,7 +337,7 @@
       "Azure.Identity/1.2.3": {
         "dependencies": {
           "Azure.Core": "1.4.1",
-          "Microsoft.Identity.Client": "4.16.1",
+          "Microsoft.Identity.Client": "4.18.0",
           "Microsoft.Identity.Client.Extensions.Msal": "2.12.0",
           "System.Memory": "4.5.3",
           "System.Security.Cryptography.ProtectedData": "4.5.0",
@@ -644,7 +645,7 @@
           "lib/netcoreapp3.1/Microsoft.Extensions.Primitives.dll": {}
         }
       },
-      "Microsoft.Identity.Client/4.16.1": {
+      "Microsoft.Identity.Client/4.18.0": {
         "dependencies": {
           "Microsoft.CSharp": "4.5.0",
           "System.ComponentModel.TypeConverter": "4.3.0",
@@ -658,8 +659,8 @@
         },
         "runtime": {
           "lib/netcoreapp2.1/Microsoft.Identity.Client.dll": {
-            "assemblyVersion": "4.16.1.0",
-            "fileVersion": "4.16.1.0"
+            "assemblyVersion": "4.18.0.0",
+            "fileVersion": "4.18.0.0"
           }
         },
         "compile": {
@@ -668,7 +669,7 @@
       },
       "Microsoft.Identity.Client.Extensions.Msal/2.12.0": {
         "dependencies": {
-          "Microsoft.Identity.Client": "4.16.1",
+          "Microsoft.Identity.Client": "4.18.0",
           "System.Security.Cryptography.ProtectedData": "4.5.0"
         },
         "runtime": {
@@ -3599,12 +3600,12 @@
       "path": "microsoft.extensions.primitives/3.1.8",
       "hashPath": "microsoft.extensions.primitives.3.1.8.nupkg.sha512"
     },
-    "Microsoft.Identity.Client/4.16.1": {
+    "Microsoft.Identity.Client/4.18.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-29w+h7IIu8c0+h1tkqfZaFWdTzjJm6GLjs9aNvWOK+b9RSIp1mvZl9VeyzV9qL6hBTqKxtXrd4493kX0UzFDuQ==",
-      "path": "microsoft.identity.client/4.16.1",
-      "hashPath": "microsoft.identity.client.4.16.1.nupkg.sha512"
+      "sha512": "sha512-Bdi179Cxzo+6tcUbcYJEFyVCvAvRazpvDBBZn3YbM2k8Yt61p0XbN58yOdOgKZ1shBvIPdjbHCxoYiXFTD66BQ==",
+      "path": "microsoft.identity.client/4.18.0",
+      "hashPath": "microsoft.identity.client.4.18.0.nupkg.sha512"
     },
     "Microsoft.Identity.Client.Extensions.Msal/2.12.0": {
       "type": "package",
