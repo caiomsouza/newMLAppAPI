@@ -150,9 +150,9 @@ namespace webapi.Controllers
                 var breedLabel = breedData.First();
                 AnalysisResponse AR = new  AnalysisResponse();
                 AR.fileUri = dreq.filelocations[0];
-                AR.StuffToShow = new   List<Dictionary<string, string>>();
-                Dictionary<string, string> itemToShow = new Dictionary<string, string>();
-                itemToShow.Add("Breed",breedLabel);
+                AR.StuffToShow =  new List<singleAnalysisPoint>();
+                singleAnalysisPoint itemToShow = new singleAnalysisPoint(){ Label="Breed", LabelValue=breedLabel};
+                
                 AR.StuffToShow.Add(itemToShow);
                 return AR;
 
