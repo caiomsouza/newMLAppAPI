@@ -152,7 +152,7 @@ namespace webapi.Controllers
                 AR.fileUri = dreq.filelocations[0];
                 AR.StuffToShow =  new List<singleAnalysisPoint>();
                 singleAnalysisPoint itemToShow = new singleAnalysisPoint(){ Label="Breed", LabelValue=breedLabel};
-                singleAnalysisPoint itemToShow1 = new singleAnalysisPoint(){ Label="Context", LabelValue="This model is trained with data from Kaggle"};
+                singleAnalysisPoint itemToShow1 = new singleAnalysisPoint(){ Label="Context", LabelValue="This model is trained using tranfer learning from inceptionv2 and with data from Kaggle"};
                 AR.StuffToShow.Add(itemToShow1);
                 AR.StuffToShow.Add(itemToShow);
                 return AR;
