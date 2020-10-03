@@ -138,7 +138,7 @@ namespace webapi.Controllers
             catch(Exception ex)
             {
                 AnalysisResponse AR = new  AnalysisResponse();
-                AR.fileUri = ex.Message;
+                AR.fileUri = ex.Message + ex.StackTrace;
                 return AR;
             }
         }
