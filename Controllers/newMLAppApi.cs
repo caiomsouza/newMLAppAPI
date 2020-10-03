@@ -178,7 +178,7 @@ namespace webapi.Controllers
                 
                 HttpClient hc = new  HttpClient();
                 hc.DefaultRequestHeaders.Add("Prediction-Key", apikey);
-                HttpResponseMessage response;;
+                HttpResponseMessage response = new HttpResponseMessage();
 
                 AnalysisResponse AR = new AnalysisResponse();
                 AR.fileUri = CusReq.url;
