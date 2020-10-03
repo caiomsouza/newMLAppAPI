@@ -68,3 +68,4 @@
 /Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/System.Configuration.ConfigurationManager.dll
 /Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/runtimes/win-x64/native/Cosmos.CRTCompat.dll
 /Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/runtimes/win-x64/native/Microsoft.Azure.Cosmos.ServiceInterop.dll
+/Users/manishshukla/Documents/technical/webapi/bin/Debug/netcoreapp3.1/Microsoft.Azure.CognitiveServices.Vision.ComputerVision.dll
