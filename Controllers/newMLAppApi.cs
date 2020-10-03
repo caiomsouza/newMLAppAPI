@@ -220,7 +220,7 @@ namespace webapi.Controllers
             if(response.Description != null){
                 singleAnalysisPoint SAP3 = new singleAnalysisPoint();
                 SAP3.Label = "Caption";
-                SAP3.LabelValue = string.Format("{0} Confidence {1} %",response.Description.Captions.OrderByDescending(a => a.Confidence).First().Text, (Math.Round(response.Description.Captions.OrderByDescending(a => a.Confidence).First().Confidence,2)).ToString());
+                SAP3.LabelValue = string.Format("{0} Confidence {1}",response.Description.Captions.OrderByDescending(a => a.Confidence).First().Text, (Math.Round(response.Description.Captions.OrderByDescending(a => a.Confidence).First().Confidence,2)).ToString());
                 AR.StuffToShow.Add(SAP3);
             }
 
@@ -228,7 +228,7 @@ namespace webapi.Controllers
                 foreach(var x in response.Objects){
                     singleAnalysisPoint SAP4 = new singleAnalysisPoint();
                     SAP4.Label =  "Object";
-                    SAP4.LabelValue = string.Format("{0} Confidence {1} %",x.ObjectProperty,(Math.Round(x.Confidence,2)).ToString());
+                    SAP4.LabelValue = string.Format("{0} Confidence {1}",x.ObjectProperty,(Math.Round(x.Confidence,2)).ToString());
                     AR.StuffToShow.Add(SAP4);
 
                 }
