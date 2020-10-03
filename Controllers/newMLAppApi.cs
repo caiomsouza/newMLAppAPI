@@ -182,6 +182,7 @@ namespace webapi.Controllers
 
                 AnalysisResponse AR = new AnalysisResponse();
                 AR.fileUri = CusReq.url;
+                AR.StuffToShow = new List<singleAnalysisPoint>();
                 if(mediaType == "chutney")
                      response = await hc.PostAsJsonAsync<CustomVisionAPIRequest>("https://uksouth.api.cognitive.microsoft.com/customvision/v3.0/Prediction/7ffefc23-20ae-4eed-8664-c5a578b526df/classify/iterations/Iteration2/url",CusReq);
                 else
