@@ -192,7 +192,15 @@ namespace webapi.Controllers
             AnalysisResponse AR = new  AnalysisResponse();
             var cvkey = getAccountKey("computervisionkey");
             var cvClient = Authenticate("https://computervisionmsmlapp.cognitiveservices.azure.com/",cvkey);
-            var response = await cvClient.AnalyzeImageAsync(CusReq.url);
+              List<VisualFeatureTypes?> features = new List<VisualFeatureTypes?>()
+                                                        {
+                                                            VisualFeatureTypes.Categories, VisualFeatureTypes.Description,
+                                                            VisualFeatureTypes.Faces, VisualFeatureTypes.ImageType,
+                                                            VisualFeatureTypes.Tags, VisualFeatureTypes.Adult,
+                                                            VisualFeatureTypes.Color, VisualFeatureTypes.Brands,
+                                                            VisualFeatureTypes.Objects
+                                                        };
+            var response = await cvClient.AnalyzeImageAsync(CusReq.url,features);
             AR.fileUri = CusReq.url;
             AR.StuffToShow = new List<singleAnalysisPoint>();
             
