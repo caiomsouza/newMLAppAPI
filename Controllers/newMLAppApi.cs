@@ -121,10 +121,10 @@ namespace webapi.Controllers
                 sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
                 AnalysisResponse AR = new  AnalysisResponse();
                 if(MD.analysisType == "dog"){
-                DogBreedDetectRequest dreq = new  DogBreedDetectRequest();
-                dreq.filelocations = new List<string>();
-                dreq.filelocations.Add(sasUri.ToString());
-                AR = await  Analyze(dreq);
+                    DogBreedDetectRequest dreq = new  DogBreedDetectRequest();
+                    dreq.filelocations = new List<string>();
+                    dreq.filelocations.Add(sasUri.ToString());
+                    AR = await  Analyze(dreq);
                 }
                 if(MD.analysisType.ToLower() == "indianbread" || MD.analysisType.ToLower() == "chutney"){
                     CustomVisionAPIRequest CVR = new  CustomVisionAPIRequest();
@@ -177,7 +177,7 @@ namespace webapi.Controllers
                     //customvisionindianbread
                 
                 HttpClient hc = new  HttpClient();
-                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",apikey));
+                hc.DefaultRequestHeaders.Add("Prediction-Key", apikey);
                 HttpResponseMessage response;;
 
                 AnalysisResponse AR = new AnalysisResponse();
