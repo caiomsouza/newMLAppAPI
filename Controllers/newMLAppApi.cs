@@ -185,33 +185,60 @@ namespace webapi.Controllers
             return client;
         }
 
-        private async Task<AnalysisResponse> CogitiveServiceAnalysis(CustomVisionAPIRequest CusReq){
+        [HttpPost]
+        [Route("api/AnalyzeMediaCognitiveServices")]
+        [AllowAnonymous]
+        public async Task<AnalysisResponse> CogitiveServiceAnalysis([FromBody]CustomVisionAPIRequest CusReq){
             AnalysisResponse AR = new  AnalysisResponse();
             var cvkey = getAccountKey("computervisionkey");
             var cvClient = Authenticate("https://computervisionmsmlapp.cognitiveservices.azure.com/",cvkey);
             var response = await cvClient.AnalyzeImageAsync(CusReq.url);
             AR.fileUri = CusReq.url;
             AR.StuffToShow = new List<singleAnalysisPoint>();
-            singleAnalysisPoint SAP1 = new singleAnalysisPoint();
-            SAP1.Label = "Total Faces";
-            SAP1.LabelValue = response.Faces.Count.ToString();
-            AR.StuffToShow.Add(SAP1);
-            singleAnalysisPoint SAP2 = new singleAnalysisPoint();
-            SAP2.Label = "Adult Score";
-            SAP2.LabelValue = (Math.Round(response.Adult.AdultScore,2)).ToString();
-            AR.StuffToShow.Add(SAP2);
-            singleAnalysisPoint SAP3 = new singleAnalysisPoint();
-            SAP3.Label = "Caption";
-            SAP3.LabelValue = string.Format("{0} Confidence {1} %",response.Description.Captions.OrderByDescending(a => a.Confidence).First().Text, (Math.Round(response.Description.Captions.OrderByDescending(a => a.Confidence).First().Confidence,2)).ToString());
-            AR.StuffToShow.Add(SAP3);
-
-            foreach(var x in response.Objects){
-                singleAnalysisPoint SAP4 = new singleAnalysisPoint();
-                SAP4.Label =  "Object";
-                SAP4.LabelValue = string.Format("{0} Confidence {1} %",x.ObjectProperty,(Math.Round(x.Confidence,2)).ToString());
-                AR.StuffToShow.Add(SAP4);
+            
+            if(response.Faces != null){
+                singleAnalysisPoint SAP1 = new singleAnalysisPoint();
+                SAP1.Label = "Total Faces";
+                SAP1.LabelValue = response.Faces.Count.ToString();
+                AR.StuffToShow.Add(SAP1);
+            }
+            if(response.Adult != null){
+                    singleAnalysisPoint SAP2 = new singleAnalysisPoint();
+                    SAP2.Label = "Adult Score";
+                    SAP2.LabelValue = (Math.Round(response.Adult.AdultScore,2)).ToString();
+                    AR.StuffToShow.Add(SAP2);
 
             }
+            if(response.Description != null){
+                singleAnalysisPoint SAP3 = new singleAnalysisPoint();
+                SAP3.Label = "Caption";
+                SAP3.LabelValue = string.Format("{0} Confidence {1} %",response.Description.Captions.OrderByDescending(a => a.Confidence).First().Text, (Math.Round(response.Description.Captions.OrderByDescending(a => a.Confidence).First().Confidence,2)).ToString());
+                AR.StuffToShow.Add(SAP3);
+            }
+
+            if(response.Objects != null){
+                foreach(var x in response.Objects){
+                    singleAnalysisPoint SAP4 = new singleAnalysisPoint();
+                    SAP4.Label =  "Object";
+                    SAP4.LabelValue = string.Format("{0} Confidence {1} %",x.ObjectProperty,(Math.Round(x.Confidence,2)).ToString());
+                    AR.StuffToShow.Add(SAP4);
+
+                }
+
+            }
+            if(response.Categories != null){
+                foreach(var x in response.Categories){
+                    singleAnalysisPoint SAP5 = new singleAnalysisPoint();
+                    SAP5.Label = x.Name;
+                    SAP5.LabelValue = (Math.Round(x.Score,2)).ToString();
+                    AR.StuffToShow.Add(SAP5);
+                }
+            }
+
+
+
+
+
             return AR;
 
         }
