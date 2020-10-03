@@ -21,6 +21,7 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using Azure.Core;
 
+
 using System.Text.Json.Serialization;
 namespace webapi.Controllers
 {
@@ -118,11 +119,20 @@ namespace webapi.Controllers
                 sas.SetPermissions(AccountSasPermissions.Read);
                 UriBuilder sasUri = new UriBuilder(fileClient.Uri);
                 sasUri.Query = sas.ToSasQueryParameters(sharedKeyCredential).ToString();
+                AnalysisResponse AR = new  AnalysisResponse();
+                if(MD.analysisType == "dog"){
                 DogBreedDetectRequest dreq = new  DogBreedDetectRequest();
                 dreq.filelocations = new List<string>();
                 dreq.filelocations.Add(sasUri.ToString());
-                AnalysisResponse AR = new  AnalysisResponse();
                 AR = await  Analyze(dreq);
+                }
+                if(MD.analysisType.ToLower() == "indianbread" || MD.analysisType.ToLower() == "chutney"){
+                    CustomVisionAPIRequest CVR = new  CustomVisionAPIRequest();
+                    CVR.url = sasUri.ToString();
+                    AR = await CustomAnalyse(CVR, MD.analysisType);
+                
+                }                
+                
                 return (AR);
             }
             catch(Exception ex)
@@ -160,6 +170,35 @@ namespace webapi.Controllers
         }
         
 
+        private async Task<AnalysisResponse> CustomAnalyse( CustomVisionAPIRequest CusReq, string mediaType){
+
+                var apikey = getAccountKey("customvision" + mediaType);
+                                   // customvisionchutney
+                    //customvisionindianbread
+                
+                HttpClient hc = new  HttpClient();
+                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",apikey));
+                HttpResponseMessage response;;
+
+                AnalysisResponse AR = new AnalysisResponse();
+                AR.fileUri = CusReq.url;
+                if(mediaType == "chutney")
+                     response = await hc.PostAsJsonAsync<CustomVisionAPIRequest>("https://uksouth.api.cognitive.microsoft.com/customvision/v3.0/Prediction/7ffefc23-20ae-4eed-8664-c5a578b526df/classify/iterations/Iteration2/url",CusReq);
+                else
+                    response = await hc.PostAsJsonAsync<CustomVisionAPIRequest>("https://uksouth.api.cognitive.microsoft.com/customvision/v3.0/Prediction/5517aa7f-402e-4a98-8706-c18901a9b568/classify/iterations/Iteration1/url",CusReq);
+               
+                var responsedata = JsonSerializer.Deserialize<CustomVisionResponse>(await response.Content.ReadAsStringAsync());
+
+                singleAnalysisPoint contextitem = new singleAnalysisPoint(){ Label="Context", LabelValue="Azure CustomVision in action"};
+                AR.StuffToShow.Add(contextitem);
+
+                foreach(var x in responsedata.predictions){
+                    singleAnalysisPoint itemToShow = new singleAnalysisPoint(){ Label="Class", LabelValue=string.Format("{0}, chance {1} Percent",x.tagName, Math.Round(x.probability,2))};
+                    AR.StuffToShow.Add(itemToShow);
+                };
+                return AR;
+
+        }
         private string getAccountKey(string secretName){
             SecretClientOptions options = new SecretClientOptions()
                             {
