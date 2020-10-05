@@ -152,7 +152,7 @@ namespace webapi.Controllers
 
         [HttpPost]
         [Route("api/AnalyzeMedia")]
-        [AllowAnonymous]
+        
         public async Task<AnalysisResponse> Analyze([FromBody] DogBreedDetectRequest dreq){
 
                 var dogbreedapikey = getAccountKey("dogbreedkey");
