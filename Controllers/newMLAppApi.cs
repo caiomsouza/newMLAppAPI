@@ -177,6 +177,27 @@ namespace webapi.Controllers
         }
         
 
+        [HttpPost]
+        [Route("api/AnalyzeText")]
+        [AllowAnonymous]
+        public async Task<List<String>> AnalyzeText([FromBody] nlpRequest req){
+
+               var nlpmodelkey = getAccountKey("nlpmodelkey");
+                
+                HttpClient hc = new  HttpClient();
+                hc.DefaultRequestHeaders.Add("Authorization", string.Format("Bearer {0}",nlpmodelkey));
+
+                
+                var response = await hc.PostAsJsonAsync<nlpRequest>("http://9dcadffd-28ed-4243-b8c1-80c93ddb4624.uksouth.azurecontainer.io/score",req);
+               
+                var results = JsonSerializer.Deserialize<List<String>>(await response.Content.ReadAsStringAsync());
+                return results;
+
+                
+
+
+        }
+
         private static ComputerVisionClient Authenticate(string endpoint, string key)
         {
             ComputerVisionClient client =
@@ -187,7 +208,7 @@ namespace webapi.Controllers
 
         [HttpPost]
         [Route("api/AnalyzeMediaCognitiveServices")]
-        [AllowAnonymous]
+       
         public async Task<AnalysisResponse> CogitiveServiceAnalysis([FromBody]CustomVisionAPIRequest CusReq){
             AnalysisResponse AR = new  AnalysisResponse();
             var cvkey = getAccountKey("computervisionkey");
@@ -281,6 +302,8 @@ namespace webapi.Controllers
                 return AR;
 
         }
+ 
+ 
         private string getAccountKey(string secretName){
             SecretClientOptions options = new SecretClientOptions()
                             {

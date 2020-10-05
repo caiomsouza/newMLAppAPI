@@ -11,3 +11,7 @@ public class CustomVisionWrapper  : CustomVisionAPIRequest{
     public string mediaType {get;set;}
 
 }
+
+public class nlpRequest {
+    public List<string> sentences {get;set;}
+}
