@@ -179,7 +179,7 @@ namespace webapi.Controllers
 
         [HttpPost]
         [Route("api/AnalyzeText")]
-        [AllowAnonymous]
+        
         public async Task<List<String>> AnalyzeText([FromBody] nlpRequest req){
 
                var nlpmodelkey = getAccountKey("nlpmodelkey");
