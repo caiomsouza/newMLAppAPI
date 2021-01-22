@@ -316,7 +316,7 @@ namespace webapi.Controllers
                                     Mode = RetryMode.Exponential
                                 }
                             };
-        var client = new SecretClient(new Uri("https://newmlappkeyvault.vault.azure.net/"), new DefaultAzureCredential(
+        var client = new SecretClient(new Uri("https://orthopedicriskkeyvault.vault.azure.net/"), new DefaultAzureCredential(
                     new DefaultAzureCredentialOptions
                     {
                         ExcludeVisualStudioCredential = true,
